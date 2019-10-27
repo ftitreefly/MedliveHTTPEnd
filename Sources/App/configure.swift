@@ -13,19 +13,19 @@ func configure(_ app: Application) throws {
         // middlewares.use(app.make(FileMiddleware.self))
     }
     
-    app.databases.sqlite(
-        configuration: .init(storage: .connection(.file(path: "db.sqlite"))),
-        threadPool: app.make(),
-        poolConfiguration: app.make(),
-        logger: app.make(),
-        on: app.make()
-    )
-    
-    app.register(Migrations.self) { c in
-        var migrations = Migrations()
-        migrations.add(CreateTodo(), to: .sqlite)
-        return migrations
-    }
+//    app.databases.sqlite(
+//        configuration: .init(storage: .connection(.file(path: "db.sqlite"))),
+//        threadPool: app.make(),
+//        poolConfiguration: app.make(),
+//        logger: app.make(),
+//        on: app.make()
+//    )
+//
+//    app.register(Migrations.self) { c in
+//        var migrations = Migrations()
+//        migrations.add(CreateTodo(), to: .sqlite)
+//        return migrations
+//    }
     
     try routes(app)
 }
