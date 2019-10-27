@@ -1,20 +1,20 @@
-// swift-tools-version:5.1
+// swift-tools-version:4.0
 import PackageDescription
 
 let package = Package(
-    name: "app",
+    name: "MedliveHTTPEnd",
     products: [
-        .executable(name: "Run", targets: ["Run"]),
-        .library(name: "App", targets: ["App"]),
+        .library(name: "MedliveHTTPEnd", targets: ["App"]),
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-beta"),
-        .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-beta"),
-        .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.0.0-beta"),
+        .package(url: "https://github.com/vapor/vapor.git", from: "3.0.0"),
+
+        // 🔵 Swift ORM (queries, models, relations, etc) built on SQLite 3.
+        .package(url: "https://github.com/vapor/fluent-sqlite.git", from: "3.0.0")
     ],
     targets: [
-        .target(name: "App", dependencies: ["Fluent", "FluentSQLiteDriver", "Vapor"]),
+        .target(name: "App", dependencies: ["FluentSQLite", "Vapor"]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])
     ]

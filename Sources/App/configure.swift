@@ -1,31 +1,32 @@
-import Fluent
-import FluentSQLiteDriver
+import FluentSQLite
 import Vapor
 
-// Called before your application initializes.
-func configure(_ app: Application) throws {
+/// Called before your application initializes.
+public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     // Register providers first
-    app.provider(FluentProvider())
+    try services.register(FluentSQLiteProvider())
+
+    // Register routes to the router
+    let router = EngineRouter.default()
+    try routes(router)
+    services.register(router, as: Router.self)
 
     // Register middleware
-    app.register(extension: MiddlewareConfiguration.self) { middlewares, app in
-        // Serves files from `Public/` directory
-        // middlewares.use(app.make(FileMiddleware.self))
-    }
-    
-//    app.databases.sqlite(
-//        configuration: .init(storage: .connection(.file(path: "db.sqlite"))),
-//        threadPool: app.make(),
-//        poolConfiguration: app.make(),
-//        logger: app.make(),
-//        on: app.make()
-//    )
-//
-//    app.register(Migrations.self) { c in
-//        var migrations = Migrations()
-//        migrations.add(CreateTodo(), to: .sqlite)
-//        return migrations
-//    }
-    
-    try routes(app)
+    var middlewares = MiddlewareConfig() // Create _empty_ middleware config
+    // middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
+    middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
+    services.register(middlewares)
+
+    // Configure a SQLite database
+    let sqlite = try SQLiteDatabase(storage: .memory)
+
+    // Register the configured SQLite database to the database config.
+    var databases = DatabasesConfig()
+    databases.add(database: sqlite, as: .sqlite)
+    services.register(databases)
+
+    // Configure migrations
+    var migrations = MigrationConfig()
+    migrations.add(model: Todo.self, database: .sqlite)
+    services.register(migrations)
 }
